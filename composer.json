@@ -1,0 +1,13 @@
+{
+    "name": "mazherhossain/oopcrud",
+    "description": "Object Oriented Crud",
+    "type": "project",
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "APP\\" : "app/"
+        }
+    }
+}
