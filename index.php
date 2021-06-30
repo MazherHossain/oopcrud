@@ -2,7 +2,11 @@
 	include_once "vendor/autoload.php";
 	use App\Controllers\Student;//To use the Student class from Student.php inside Controllers
 	$stu = new Student;
-
+	if(isset($_GET['trash_id'])){
+		$id=$_GET['trash_id'];
+		$stu-> trashStudent($id);
+	}
+	
 	if(isset($_POST['add'])){
 		//Get values
 		$name=$_POST['name'];
@@ -10,6 +14,7 @@
 		$cell=$_POST['cell'];
 		$pass=$_POST['pass'];
 		$photo=$_FILES['photo'];
+		
 
 		if(empty($name) || empty($email) || empty($cell)|| empty($pass) || empty($photo)){
 			$msg='<p class="alert alert-danger alert-dismissible fade show" role="alert"> All fields are required!<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </p>';
@@ -18,8 +23,9 @@
 			$stu -> createNewStudent($name,$email,$cell,$pass,$photo);
 			header('location:index.php');
 		}
-
+		
 	}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -56,33 +62,41 @@
 					<input name="search" type="search" class="form-control" placeholder="Search">
 					<button name="searchbtn" class="btn btn-outline-primary" type="submit">Search</button>
 				</form>
+				<h6><a style="text-decoration:none" class="badge rounded-pill bg-primary mt-2 text-light" href="index.php">Published <?php echo $stu -> dataCount(); ?></a></h6>
+				<h6><a style="text-decoration:none" class="badge rounded-pill bg-danger mt-2 ms-2 text-light" href="trash.php">Trash <?php echo $stu -> dataCount('trash'); ?></a></h6>
 			</div>
 				<table class="table table-success table-striped text-success">
 					<thead>
 						<tr>
-							<th ></th>
-							<th class="col-sm-1">Name</th>
+							<th class="col-sm-1"></th>
+							<th class="col-sm-0">Name</th>
 							<th class="col-sm-2">Email</th>
-							<th class="col-sm-1">Cell</th>
-							<th class="col-sm-2">User Name</th>
-							<th>Action</th>
+							<th class="col-sm-0">Cell</th>
+							<th class="col-sm-2">Photo</th>
+							<th class="col-sm-3">Action</th>
 						</tr>
 					</thead>
 					<tbody>
-					
+					<?php
+						$data=$stu->allStudent();
+						$i = 1;
+						while($student=$data->fetch_object()):
+					?>
 						<tr>
-							<td><?php  ?></td>
-							<td><?php  ?></td>
-							<td><?php  ?></td>
-							<td><?php  ?></td>
-							<td><?php  ?></td>
+							<td><?php echo $i; $i++; ?></td>
+							<td><?php echo $student -> name; ?></td>
+							<td><?php echo $student -> email; ?></td>
+							<td><?php echo $student -> cell; ?></td>
+							<td><img style="width:50px;" src="photos/students/<?php echo $student -> photo;?>" alt=""></td>
 							<td>
-								<a class="btn btn-sm btn-primary" href="show.php?show_id=<?php?>">View</a>
-								<a class="btn btn-sm btn-warning" href="edit.php?edit_id=<?php?>">Edit</a>
-								<a class="btn btn-sm btn-danger delete_btn" href="?delete_id=<?php?>&photo=<?php ?>">Delete</a>
+								<a class="btn btn-sm btn-primary" href="show.php?student_id=<?php echo $student -> id; ?>">View</a>
+								<a class="btn btn-sm btn-warning" href="edit.php?edit_id=<?php echo $student -> id; ?>">Edit</a>
+								<a class="btn btn-sm btn-danger delete_btn" href="?trash_id=<?php echo $student -> id; ?>&photo=<?php  ?>">Trash</a>
 							</td>
 						</tr>
-				
+						<?php
+							endwhile;
+						?>
 					</tbody>
 				</table>
 			</div>
@@ -108,7 +122,7 @@
 					</div>
 
 					<div class="form-group">
-						<label for="">Phone</label>
+						<label for="">Cell</label>
 						<input name="cell" class="form-control mb-2" type="text">
 					</div>
 					

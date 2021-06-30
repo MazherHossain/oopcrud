@@ -1,5 +1,5 @@
 <?php
-
+  
   namespace App\Support;
   use mysqli;
 
@@ -18,7 +18,7 @@
 //Create Data
   protected function create(string $table,array $data){
     //get column name
-    $arr_key=array_key($data);
+    $arr_key=array_keys($data);
     $db_col= implode(', ',$arr_key);
     //get values
     $arr_val = array_values($data);
@@ -39,13 +39,22 @@
     $this->connection()->query("DELETE FROM $table WHERE id = '$id'");
 }
 //Update Data
-  protected function update($sql){
-    $this->connection()->query($sql);
+  protected function update(string $table,int $id,array $data){
+    $query_string ='';
+    foreach($data as $key => $value){
+      $query_string.=$key."= '".$value . "',";
+    }
+    $update_str = substr($query_string, 0, -1);
+    $this->connection()->query("UPDATE $table SET $update_str WHERE id='$id'");
 }
 //All Data
   protected function all($table,$order='DESC'){
     return $this -> connection()->query("SELECT * FROM $table ORDER by id $order");
 }
+//custom query
+  protected function cq($sql){
+    return $this->connection()->query($sql);
+  }
 //Where condition
   protected function where(){
     
@@ -54,5 +63,6 @@
   protected function orWhere(){
     
 }
+
 }
 ?>
